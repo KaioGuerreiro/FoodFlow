@@ -28,7 +28,7 @@ export default function CadastroUsuario({ onVoltar }) {
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
         <div className="flex items-center mb-6">
           <button
-            onClick={() => window.history.back()}
+            onClick={onVoltar}
             className="text-blue-700 hover:text-blue-900 mr-4"
             type="button"
           >

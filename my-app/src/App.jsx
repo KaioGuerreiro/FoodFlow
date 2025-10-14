@@ -7,11 +7,11 @@ function App() {
   const [currentPage, setCurrentPage] = useState("home");
 
   if (currentPage === "usuario") {
-    return <CadastroUsuario />;
+    return <CadastroUsuario onVoltar={() => setCurrentPage("home")} />;
   }
 
   if (currentPage === "prato") {
-    return <CadastroPrato />;
+    return <CadastroPrato onVoltar={() => setCurrentPage("home")} />;
   }
 
   return (
