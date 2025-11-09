@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-export default function CadastroPrato({ onVoltar }) {
+export default function CadastroPrato({ onVoltar, onSalvar }) {
   const [form, setForm] = useState({
     nome: "",
     ingredientes: "",
@@ -13,6 +13,7 @@ export default function CadastroPrato({ onVoltar }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    onSalvar(form);
     alert("Prato cadastrado com sucesso!");
     setForm({
       nome: "",
@@ -74,6 +75,7 @@ export default function CadastroPrato({ onVoltar }) {
             <input
               type="number"
               step="0.01"
+              min="0"
               name="valor"
               value={form.valor}
               onChange={handleChange}

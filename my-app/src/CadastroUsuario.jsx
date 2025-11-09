@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-export default function CadastroUsuario({ onVoltar }) {
+export default function CadastroUsuario({ onVoltar, onSalvar }) {
   const [form, setForm] = useState({
     nome: "",
     dataNascimento: "",
@@ -12,8 +12,23 @@ export default function CadastroUsuario({ onVoltar }) {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const formatCPF = (value) => {
+    return value
+      .replace(/\D/g, "")
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d{1,2})/, "$1-$2")
+      .replace(/(-\d{2})\d+?$/, "$1");
+  };
+
+  const handleCPFChange = (e) => {
+    const formatted = formatCPF(e.target.value);
+    setForm({ ...form, cpf: formatted });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    onSalvar(form);
     alert("Usuário cadastrado com sucesso!");
     setForm({
       nome: "",
@@ -76,7 +91,9 @@ export default function CadastroUsuario({ onVoltar }) {
               type="text"
               name="cpf"
               value={form.cpf}
-              onChange={handleChange}
+              onChange={handleCPFChange}
+              maxLength="14"
+              placeholder="000.000.000-00"
               className="w-full mt-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
               required
             />

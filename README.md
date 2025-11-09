@@ -1,8 +1,42 @@
-# FoodFlow
+# FoodFlow - MVP
 
 Sistema de Gerenciamento de Restaurante
 
-Este repositório contém o projeto FoodFlow, uma aplicação web para cadastro de usuários e pratos, construída com React + Vite e estilizada com Tailwind CSS.
+Este repositório contém o projeto FoodFlow, uma aplicação web completa para gerenciamento de restaurante, construída com React + Vite e estilizada com Tailwind CSS.
+
+## ✨ Funcionalidades do MVP
+
+### 🎯 Dashboard
+
+- Visualização de estatísticas em tempo real
+- Contador de usuários e pratos cadastrados
+- Cálculo automático do valor médio dos pratos
+- Acesso rápido às principais funcionalidades
+- Visualização dos últimos registros
+
+### 👥 Gerenciamento de Usuários
+
+- ✅ Cadastro de novos usuários
+- ✅ Listagem completa com busca
+- ✅ Edição inline de dados
+- ✅ Exclusão com confirmação
+- ✅ Formatação automática de CPF
+- ✅ Validação de campos obrigatórios
+
+### 🍴 Gerenciamento de Cardápio
+
+- ✅ Cadastro de pratos
+- ✅ Listagem em cards responsivos
+- ✅ Edição de pratos existentes
+- ✅ Exclusão com confirmação
+- ✅ Busca por nome ou ingredientes
+- ✅ Formatação de valores monetários
+
+### 💾 Persistência de Dados
+
+- Armazenamento local usando localStorage
+- Dados mantidos entre sessões
+- Sem necessidade de backend
 
 ## 📂 Estrutura do repositório
 
@@ -10,9 +44,12 @@ Este repositório contém o projeto FoodFlow, uma aplicação web para cadastro 
 FoodFlow/
 ├─ my-app/                 # Aplicação web (React + Vite)
 │  ├─ src/
-│  │  ├─ App.jsx
-│  │  ├─ CadastroUsuario.jsx
-│  │  ├─ CadastroPrato.jsx
+│  │  ├─ App.jsx              # Componente principal com roteamento
+│  │  ├─ Dashboard.jsx        # Dashboard com estatísticas
+│  │  ├─ CadastroUsuario.jsx  # Formulário de cadastro de usuários
+│  │  ├─ ListaUsuarios.jsx    # Lista e gerenciamento de usuários
+│  │  ├─ CadastroPrato.jsx    # Formulário de cadastro de pratos
+│  │  ├─ ListaPratos.jsx      # Lista e gerenciamento de pratos
 │  │  └─ index.css
 │  ├─ public/
 │  ├─ package.json
@@ -32,21 +69,38 @@ FoodFlow/
 cd .\my-app
 ```
 
-1. Instale as dependências:
+2. Instale as dependências:
 
 ```powershell
 npm install
 ```
 
-1. Rode o servidor de desenvolvimento:
+3. Rode o servidor de desenvolvimento:
 
 ```powershell
 npm run dev
 ```
 
-1. Abra no navegador:
+4. Abra no navegador:
 
 - <http://localhost:5173/>
+
+## 🎨 Tecnologias Utilizadas
+
+- **React 19** - Biblioteca JavaScript para interfaces
+- **Vite 7** - Build tool e dev server
+- **Tailwind CSS 4** - Framework CSS utilitário
+- **LocalStorage API** - Persistência de dados local
+
+## 📱 Recursos da Interface
+
+- ✨ Design moderno e responsivo
+- 🎨 Gradientes coloridos para cada seção
+- 🔍 Sistema de busca em tempo real
+- ✏️ Edição inline de registros
+- 📊 Cards de estatísticas no dashboard
+- 🔔 Confirmações para ações destrutivas
+- 📱 Totalmente responsivo para mobile e desktop
 
 ## 🧩 Funcionalidades
 
@@ -63,10 +117,10 @@ npm run dev
 ```js
 export default {
   plugins: {
-    '@tailwindcss/postcss': {},
+    "@tailwindcss/postcss": {},
     autoprefixer: {},
   },
-}
+};
 ```
 
 - E no `src/index.css`:

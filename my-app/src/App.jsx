@@ -1,47 +1,119 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CadastroUsuario from "./CadastroUsuario";
 import CadastroPrato from "./CadastroPrato";
+import ListaUsuarios from "./ListaUsuarios";
+import ListaPratos from "./ListaPratos";
+import Dashboard from "./Dashboard";
 import "./App.css";
 
 function App() {
-  const [currentPage, setCurrentPage] = useState("home");
+  const [currentPage, setCurrentPage] = useState("dashboard");
+  const [usuarios, setUsuarios] = useState([]);
+  const [pratos, setPratos] = useState([]);
 
-  if (currentPage === "usuario") {
-    return <CadastroUsuario onVoltar={() => setCurrentPage("home")} />;
-  }
+  // Carregar dados do localStorage
+  useEffect(() => {
+    const usuariosSalvos = localStorage.getItem("usuarios");
+    const pratosSalvos = localStorage.getItem("pratos");
 
-  if (currentPage === "prato") {
-    return <CadastroPrato onVoltar={() => setCurrentPage("home")} />;
-  }
+    if (usuariosSalvos) {
+      setUsuarios(JSON.parse(usuariosSalvos));
+    }
+    if (pratosSalvos) {
+      setPratos(JSON.parse(pratosSalvos));
+    }
+  }, []);
 
-  return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-purple-100 to-pink-300 p-6">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
-        <h1 className="text-3xl font-bold text-center text-purple-700 mb-8">
-          FoodFlow
-        </h1>
-        <p className="text-center text-gray-600 mb-8">
-          Sistema de Gerenciamento de Restaurante
-        </p>
+  // Salvar usuários no localStorage
+  useEffect(() => {
+    localStorage.setItem("usuarios", JSON.stringify(usuarios));
+  }, [usuarios]);
 
-        <div className="space-y-4">
-          <button
-            onClick={() => setCurrentPage("usuario")}
-            className="w-full bg-blue-600 text-white p-3 rounded-lg font-semibold hover:bg-blue-700 transition"
-          >
-            Cadastrar Usuário
-          </button>
+  // Salvar pratos no localStorage
+  useEffect(() => {
+    localStorage.setItem("pratos", JSON.stringify(pratos));
+  }, [pratos]);
 
-          <button
-            onClick={() => setCurrentPage("prato")}
-            className="w-full bg-green-600 text-white p-3 rounded-lg font-semibold hover:bg-green-700 transition"
-          >
-            Cadastrar Prato
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+  const adicionarUsuario = (usuario) => {
+    const novoUsuario = { ...usuario, id: Date.now() };
+    setUsuarios([...usuarios, novoUsuario]);
+  };
+
+  const atualizarUsuario = (id, usuarioAtualizado) => {
+    setUsuarios(
+      usuarios.map((u) => (u.id === id ? { ...usuarioAtualizado, id } : u))
+    );
+  };
+
+  const excluirUsuario = (id) => {
+    setUsuarios(usuarios.filter((u) => u.id !== id));
+  };
+
+  const adicionarPrato = (prato) => {
+    const novoPrato = { ...prato, id: Date.now() };
+    setPratos([...pratos, novoPrato]);
+  };
+
+  const atualizarPrato = (id, pratoAtualizado) => {
+    setPratos(
+      pratos.map((p) => (p.id === id ? { ...pratoAtualizado, id } : p))
+    );
+  };
+
+  const excluirPrato = (id) => {
+    setPratos(pratos.filter((p) => p.id !== id));
+  };
+
+  const renderPage = () => {
+    switch (currentPage) {
+      case "dashboard":
+        return (
+          <Dashboard
+            usuarios={usuarios}
+            pratos={pratos}
+            onNavigate={setCurrentPage}
+          />
+        );
+      case "cadastro-usuario":
+        return (
+          <CadastroUsuario
+            onVoltar={() => setCurrentPage("dashboard")}
+            onSalvar={adicionarUsuario}
+          />
+        );
+      case "lista-usuarios":
+        return (
+          <ListaUsuarios
+            usuarios={usuarios}
+            onVoltar={() => setCurrentPage("dashboard")}
+            onEditar={atualizarUsuario}
+            onExcluir={excluirUsuario}
+            onNovo={() => setCurrentPage("cadastro-usuario")}
+          />
+        );
+      case "cadastro-prato":
+        return (
+          <CadastroPrato
+            onVoltar={() => setCurrentPage("dashboard")}
+            onSalvar={adicionarPrato}
+          />
+        );
+      case "lista-pratos":
+        return (
+          <ListaPratos
+            pratos={pratos}
+            onVoltar={() => setCurrentPage("dashboard")}
+            onEditar={atualizarPrato}
+            onExcluir={excluirPrato}
+            onNovo={() => setCurrentPage("cadastro-prato")}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
+  return <div className="min-h-screen">{renderPage()}</div>;
 }
 
 export default App;
