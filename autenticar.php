@@ -19,46 +19,39 @@ if (empty($username) || empty($password)) {
     exit();
 }
 
-// Usuários de exemplo (em produção, isso viria do banco de dados)
-// Senhas: admin123, teste123, gerente123
+// Usuários pré-definidos
 $usuarios = [
     'admin' => [
         'id' => 1,
         'username' => 'admin',
-        'password' => '$2a$12$pbZZY/Dh5klhX5OEiTpleeF6qj00V1YIU1P1t0OFZP4ik72e7LbUi', // admin123
+        'password' => password_hash('admin123', PASSWORD_DEFAULT),
         'nome' => 'Administrador',
         'email' => 'admin@foodflow.com',
         'tipo_usuario' => 'admin',
         'ativo' => true
     ],
-    'teste' => [
+    'Matheus' => [
         'id' => 2,
-        'username' => 'teste',
-        'password' => '$2a$12$fDkEjK1lRRAfiwQHDdClge0hfB8LKhzX72cQd8WwK0/..wnm8i6/S', // teste123
-        'nome' => 'Usuário Teste',
-        'email' => 'teste@foodflow.com',
-        'tipo_usuario' => 'funcionario',
+        'username' => 'Matheus',
+        'password' => password_hash('12345', PASSWORD_DEFAULT),
+        'nome' => 'Matheus',
+        'email' => 'matheus@foodflow.com',
+        'tipo_usuario' => 'usuario',
         'ativo' => true
     ],
-    'gerente' => [
+    'Kaio' => [
         'id' => 3,
-        'username' => 'gerente',
-        'password' => '$2a$12$wxcpdnoRJURbWSyfoyTVWeYcRfU1SXX4SzEQ2YQrn/yVlGmk2W3se', // gerente123
-        'nome' => 'Gerente',
-        'email' => 'gerente@foodflow.com',
-        'tipo_usuario' => 'gerente',
+        'username' => 'Kaio',
+        'password' => password_hash('12345', PASSWORD_DEFAULT),
+        'nome' => 'Kaio',
+        'email' => 'kaio@foodflow.com',
+        'tipo_usuario' => 'usuario',
         'ativo' => true
     ]
 ];
 
 // Busca o usuário
-$user = null;
-foreach ($usuarios as $u) {
-    if ($u['username'] === $username || $u['email'] === $username) {
-        $user = $u;
-        break;
-    }
-}
+$user = $usuarios[$username] ?? null;
 
 // Verifica se o usuário existe
 if (!$user) {
@@ -74,17 +67,17 @@ if (!$user['ativo']) {
     exit();
 }
 
-// Verifica a senha
+// Verifica a senha (com base nas senhas originais)
 if (!password_verify($password, $user['password'])) {
     $_SESSION['error'] = 'Usuário ou senha inválidos.';
     header('Location: login.php');
     exit();
 }
 
-// Regenera o ID da sessão para prevenir session fixation
+// Regenera o ID da sessão
 session_regenerate_id(true);
 
-// Armazena os dados do usuário na sessão
+// Define variáveis de sessão
 $_SESSION['user_id'] = $user['id'];
 $_SESSION['username'] = $user['username'];
 $_SESSION['nome'] = $user['nome'];
@@ -93,25 +86,18 @@ $_SESSION['tipo_usuario'] = $user['tipo_usuario'];
 $_SESSION['logged_in'] = true;
 $_SESSION['login_time'] = time();
 
-// Se marcou "Lembrar-me", cria um cookie (opcional)
+// Cookie de lembrar-me (opcional)
 if ($remember) {
     $token = bin2hex(random_bytes(32));
-    $expiry = time() + (30 * 24 * 60 * 60); // 30 dias
-
-    // Define o cookie
-    setcookie(
-        'remember_token',
-        $token,
-        $expiry,
-        '/',
-        '',
-        false, // true em produção com HTTPS
-        true   // httponly
-    );
+    setcookie('remember_token', $token, time() + (30 * 24 * 60 * 60), '/', '', false, true);
 }
 
-// Redireciona para o dashboard
+// Redireciona conforme o tipo de usuário
 $_SESSION['success'] = 'Login realizado com sucesso!';
-header('Location: dashboard.php');
+if ($user['tipo_usuario'] === 'admin') {
+    header('Location: dashboard.php');
+} else {
+    header('Location: cardapio.php');
+}
 exit();
 ?>
