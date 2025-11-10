@@ -1,11 +1,19 @@
 <?php
 session_start();
 
-// Redireciona para o dashboard se o usuário já estiver logado
-if (isset($_SESSION['user_id'])) {
-    header('Location: dashboard.php');
+// Se já estiver logado, redireciona conforme tipo de usuário
+if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
+    if (($_SESSION['tipo_usuario'] ?? '') === 'admin') {
+        header('Location: dashboard.php');
+    } else {
+        header('Location: cardapio.php');
+    }
     exit();
 }
+
+// Mensagem de erro (se houver)
+$erro = $_SESSION['error'] ?? '';
+unset($_SESSION['error']);
 ?>
 
 <!DOCTYPE html>
@@ -14,13 +22,29 @@ if (isset($_SESSION['user_id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FoodFlow</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
-        rel="stylesheet">
+    <title>FoodFlow - Login</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .error-message {
+            background: #ffecec;
+            color: #b00020;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .login-footer a {
+            color: #667eea;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .login-footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 
 <body>
@@ -31,10 +55,14 @@ if (isset($_SESSION['user_id'])) {
                 <p class="subtitle">Gerencie seu restaurante com facilidade</p>
             </div>
 
-            <form action="autenticar.php" method="POST" class="login-form">
+            <?php if ($erro): ?>
+                <div class="error-message"><?= htmlspecialchars($erro) ?></div>
+            <?php endif; ?>
+
+            <form action="autenticar.php" method="POST" class="login-form" autocomplete="off">
                 <div class="form-group">
                     <label for="username">Usuário</label>
-                    <input type="text" id="username" name="username" placeholder="Digite seu usuário" required>
+                    <input type="text" id="username" name="username" placeholder="Digite seu usuário" required autofocus>
                 </div>
 
                 <div class="form-group">
@@ -53,10 +81,18 @@ if (isset($_SESSION['user_id'])) {
             </form>
 
             <div class="login-footer">
-                <p>Não tem uma conta? <a href="#">Cadastre-se</a></p>
+                <p>Não tem uma conta? <a href="cadastro.php">Cadastre-se</a></p>
+            </div>
+
+            <div class="login-footer" style="margin-top:15px; font-size:14px; color:#555;">
+                <p><strong>Usuários de teste:</strong></p>
+                <p>
+                    <strong>admin / admin123</strong> (Administrador)<br>
+                    <strong>Matheus / 12345</strong><br>
+                    <strong>Kaio / 12345</strong>
+                </p>
             </div>
         </div>
     </div>
 </body>
-
 </html>
