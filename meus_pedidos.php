@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once __DIR__ . '/pedidos.php';
 
 // 🔒 Garante que o login ainda funciona
 if (!isset($_SESSION['logged_in'])) {
@@ -8,30 +9,13 @@ if (!isset($_SESSION['logged_in'])) {
 }
 
 $userName = $_SESSION['user_name'] ?? 'Visitante';
+$user_id = $_SESSION['user_id'] ?? null;
 
-// 📦 Pedidos pré-definidos (apenas visual)
-$meusPedidos = [
-    [
-        'id' => 'PED001',
-        'data' => '02/11/2025 19:45',
-        'valor_total' => 68.40,
-        'itens' => [
-            ['nome' => 'Spaghetti à Bolonhesa', 'quantidade' => 1, 'preco' => 29.90],
-            ['nome' => 'Suco Natural de Laranja', 'quantidade' => 2, 'preco' => 8.00],
-            ['nome' => 'Água Mineral', 'quantidade' => 1, 'preco' => 4.50],
-        ]
-    ],
-    [
-        'id' => 'PED002',
-        'data' => '28/10/2025 12:30',
-        'valor_total' => 44.50,
-        'itens' => [
-            ['nome' => 'Filé de Frango Grelhado', 'quantidade' => 1, 'preco' => 25.50],
-            ['nome' => 'Refrigerante Lata', 'quantidade' => 1, 'preco' => 6.00],
-            ['nome' => 'Suco de Abacaxi', 'quantidade' => 1, 'preco' => 13.00],
-        ]
-    ]
-];
+// 📦 Carrega pedidos do banco
+$meusPedidos = [];
+if ($user_id) {
+    $meusPedidos = listOrdersByUser($user_id);
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -103,30 +87,44 @@ $meusPedidos = [
         </div>
 
         <div class="orders-list">
-            <?php foreach ($meusPedidos as $pedido): ?>
-                <div class="order-card">
-                    <div class="order-header">
-                        <h3>Pedido #<?= htmlspecialchars($pedido['id']) ?></h3>
-                    </div>
+            <?php if (empty($meusPedidos)): ?>
+                <p style="text-align:center; color:#666; margin-top:40px;">Você ainda não fez nenhum pedido. 😢</p>
+            <?php else: ?>
+                <?php foreach ($meusPedidos as $pedido): ?>
+                    <div class="order-card">
+                        <div class="order-header">
+                            <h3>Pedido #<?= htmlspecialchars($pedido['id']) ?></h3>
+                        </div>
 
-                    <div class="order-info">
-                        <p><strong>Data:</strong> <?= htmlspecialchars($pedido['data']) ?></p>
-                        <p><strong>Valor Total:</strong> R$ <?= number_format($pedido['valor_total'], 2, ',', '.') ?></p>
-                    </div>
+                        <div class="order-info">
+                            <p><strong>Data:</strong> <?= htmlspecialchars($pedido['criado_em'] ?? 'N/A') ?></p>
+                            <p><strong>Status:</strong> <?= htmlspecialchars($pedido['status'] ?? 'pendente') ?></p>
+                            <p><strong>Valor Total:</strong> R$ <?= number_format($pedido['total'] ?? 0, 2, ',', '.') ?></p>
+                        </div>
 
-                    <div class="order-items">
-                        <h4>Itens:</h4>
-                        <ul>
-                            <?php foreach ($pedido['itens'] as $item): ?>
-                                <li>
-                                    <?= $item['quantidade'] ?>x <?= htmlspecialchars($item['nome']) ?> —
-                                    R$ <?= number_format($item['preco'] * $item['quantidade'], 2, ',', '.') ?>
-                                </li>
-                            <?php endforeach; ?>
-                        </ul>
+                        <div class="order-items">
+                            <h4>Itens:</h4>
+                            <ul>
+                                <?php 
+                                    $details = getOrderDetails($pedido['id']);
+                                    if ($details && !empty($details['items'])): 
+                                        foreach ($details['items'] as $item): 
+                                ?>
+                                    <li>
+                                        <?= $item['quantidade'] ?>x <?= htmlspecialchars($item['nome']) ?> —
+                                        R$ <?= number_format($item['preco_unitario'] * $item['quantidade'], 2, ',', '.') ?>
+                                    </li>
+                                <?php 
+                                        endforeach;
+                                    else:
+                                ?>
+                                    <li>Sem itens registrados.</li>
+                                <?php endif; ?>
+                            </ul>
+                        </div>
                     </div>
-                </div>
-            <?php endforeach; ?>
+                <?php endforeach; ?>
+            <?php endif; ?>
         </div>
     </div>
 </body>

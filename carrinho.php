@@ -38,9 +38,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // 🧹 Finalizar pedido
     if (isset($_POST['finalizar'])) {
-        unset($_SESSION['carrinho']);
-        header('Location: cardapio.php');
-        exit();
+        // cria pedido no banco
+        require_once __DIR__ . '/pedidos.php';
+        $user_id = $_SESSION['user_id'] ?? null;
+        if ($user_id && !empty($_SESSION['carrinho'])) {
+            $items = [];
+            foreach ($_SESSION['carrinho'] as $it) {
+                $items[] = ['produto_id' => $it['id'], 'quantidade' => $it['quantidade']];
+            }
+            $res = createOrder($user_id, $items);
+            if ($res['success']) {
+                unset($_SESSION['carrinho']);
+                $_SESSION['msg_sucesso'] = 'Pedido #' . $res['pedido_id'] . ' criado com sucesso!';
+                header('Location: meus_pedidos.php');
+                exit();
+            } else {
+                $_SESSION['error'] = 'Erro ao criar pedido: ' . ($res['message'] ?? 'Unknown');
+            }
+        } else {
+            $_SESSION['error'] = 'Carrinho vazio ou usuário não autenticado.';
+        }
     }
 
     header('Location: carrinho.php');

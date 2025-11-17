@@ -15,25 +15,24 @@ if (!isset($_SESSION['carrinho'])) {
     $_SESSION['carrinho'] = [];
 }
 
-// 🧾 Itens pré-definidos
-$itens = [
-    ['nome' => 'Spaghetti à Bolonhesa', 'descricao' => 'Delicioso macarrão com molho de carne e tomate 🍅', 'preco' => 29.90, 'categoria' => 'prato'],
-    ['nome' => 'Filé de Frango Grelhado', 'descricao' => 'Acompanhado de arroz, feijão e salada fresca 🥗', 'preco' => 25.50, 'categoria' => 'prato'],
-    ['nome' => 'Risoto de Camarão', 'descricao' => 'Risoto cremoso com camarões suculentos 🍤', 'preco' => 38.00, 'categoria' => 'prato'],
-    ['nome' => 'Suco Natural de Laranja', 'descricao' => 'Feito na hora, sem conservantes 🍊', 'preco' => 8.00, 'categoria' => 'bebida'],
-    ['nome' => 'Refrigerante Lata', 'descricao' => '250ml - Várias opções 🥤', 'preco' => 6.00, 'categoria' => 'bebida'],
-    ['nome' => 'Água Mineral', 'descricao' => 'Com ou sem gás 💧', 'preco' => 4.00, 'categoria' => 'bebida']
-];
+require_once __DIR__ . '/produtos.php';
 
-// 🧩 Adicionar ao carrinho
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['produto'])) {
-    $produto = $_POST['produto'];
+// lista produtos do banco
+$res = listProducts();
+$itens = [];
+if ($res['success']) {
+    $itens = $res['data'];
+}
+
+// 🧩 Adicionar ao carrinho (usa produto_id)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['produto_id'])) {
+    $produto_id = (int)$_POST['produto_id'];
     foreach ($itens as $item) {
-        if ($item['nome'] === $produto) {
+        if ((int)$item['id'] === $produto_id) {
             $existe = false;
 
             foreach ($_SESSION['carrinho'] as &$carrItem) {
-                if ($carrItem['nome'] === $produto) {
+                if ((int)$carrItem['id'] === $produto_id) {
                     $carrItem['quantidade']++;
                     $existe = true;
                     break;
@@ -41,8 +40,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['produto'])) {
             }
 
             if (!$existe) {
-                $item['quantidade'] = 1;
-                $_SESSION['carrinho'][] = $item;
+                $new = [
+                    'id' => $item['id'],
+                    'nome' => $item['nome'],
+                    'preco' => $item['preco'],
+                    'quantidade' => 1
+                ];
+                $_SESSION['carrinho'][] = $new;
             }
 
             $mensagem = "✅ {$item['nome']} foi adicionado ao carrinho!";
@@ -165,14 +169,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['produto'])) {
 
         <h2>🍝 Pratos</h2>
         <div class="menu-grid">
-            <?php foreach ($itens as $item): ?>
-                <?php if ($item['categoria'] === 'prato'): ?>
+                        <?php foreach ($itens as $item): ?>
+                <?php if (($item['categoria'] ?? 'prato') === 'prato'): ?>
                     <div class="menu-card">
                         <h3><?= htmlspecialchars($item['nome']) ?></h3>
                         <p><?= htmlspecialchars($item['descricao']) ?></p>
                         <p class="price">R$ <?= number_format($item['preco'], 2, ',', '.') ?></p>
                         <form method="POST">
-                            <input type="hidden" name="produto" value="<?= htmlspecialchars($item['nome']) ?>">
+                            <input type="hidden" name="produto_id" value="<?= (int)$item['id'] ?>">
                             <button type="submit">Adicionar ao Carrinho</button>
                         </form>
                     </div>
@@ -183,13 +187,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['produto'])) {
         <h2 style="margin-top:40px;">🥤 Bebidas</h2>
         <div class="menu-grid">
             <?php foreach ($itens as $item): ?>
-                <?php if ($item['categoria'] === 'bebida'): ?>
+                <?php if (($item['categoria'] ?? 'bebida') === 'bebida'): ?>
                     <div class="menu-card">
                         <h3><?= htmlspecialchars($item['nome']) ?></h3>
                         <p><?= htmlspecialchars($item['descricao']) ?></p>
                         <p class="price">R$ <?= number_format($item['preco'], 2, ',', '.') ?></p>
                         <form method="POST">
-                            <input type="hidden" name="produto" value="<?= htmlspecialchars($item['nome']) ?>">
+                            <input type="hidden" name="produto_id" value="<?= (int)$item['id'] ?>">
                             <button type="submit">Adicionar ao Carrinho</button>
                         </form>
                     </div>

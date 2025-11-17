@@ -1,8 +1,10 @@
 <?php
 session_start();
+require_once __DIR__ . '/pedidos.php';
+require_once __DIR__ . '/produtos.php';
 
-// Verifica se o usuário está logado
-if (!isset($_SESSION['user_id']) || !isset($_SESSION['logged_in'])) {
+// Verifica se o usuário está logado e é admin
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['logged_in']) || ($_SESSION['tipo_usuario'] ?? '') !== 'admin') {
     header('Location: login.php');
     exit();
 }
@@ -10,6 +12,24 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['logged_in'])) {
 // Dados do usuário
 $nome = $_SESSION['user_name'] ?? 'Administrador';
 $tipo_usuario = $_SESSION['tipo_usuario'] ?? 'admin';
+
+// Carrega estatísticas do banco
+$db = Database::getInstance()->getConnection();
+
+// Contar pedidos de hoje
+$stmt = $db->prepare("SELECT COUNT(*) as total, SUM(total) as faturamento FROM pedidos WHERE DATE(criado_em) = DATE('now')");
+$stmt->execute();
+$pedidos_hoje = $stmt->fetch() ?? ['total' => 0, 'faturamento' => 0];
+
+// Contar usuários
+$stmt = $db->prepare('SELECT COUNT(*) as total FROM users');
+$stmt->execute();
+$usuarios = $stmt->fetch() ?? ['total' => 0];
+
+// Contar produtos
+$stmt = $db->prepare('SELECT COUNT(*) as total FROM produtos');
+$stmt->execute();
+$produtos = $stmt->fetch() ?? ['total' => 0];
 ?>
 
 <!DOCTYPE html>
@@ -101,22 +121,22 @@ $tipo_usuario = $_SESSION['tipo_usuario'] ?? 'admin';
             <div id="clock" style="font-size: 28px; font-weight: 700; color:#333;">--:--</div>
         </div>
 
-        <!-- Dados pré-definidos -->
+        <!-- Dados do banco -->
         <div class="stats-grid">
             <div class="stat-card">
                 <h3>Pedidos de Hoje</h3>
-                <div class="stat-value">47</div>
-                <p>+5 em relação a ontem</p>
+                <div class="stat-value"><?= (int)$pedidos_hoje['total'] ?></div>
+                <p>Faturamento: R$ <?= number_format($pedidos_hoje['faturamento'] ?? 0, 2, ',', '.') ?></p>
             </div>
             <div class="stat-card">
-                <h3>Faturamento</h3>
-                <div class="stat-value">R$ 2.847</div>
-                <p>Meta: R$ 3.000</p>
+                <h3>Usuários Cadastrados</h3>
+                <div class="stat-value"><?= (int)$usuarios['total'] ?></div>
+                <p>Total no sistema</p>
             </div>
             <div class="stat-card">
-                <h3>Clientes Atendidos</h3>
-                <div class="stat-value">128</div>
-                <p>+18 novos esta semana</p>
+                <h3>Produtos Cadastrados</h3>
+                <div class="stat-value"><?= (int)$produtos['total'] ?></div>
+                <p>Pratos e bebidas</p>
             </div>
         </div>
 
@@ -136,6 +156,11 @@ $tipo_usuario = $_SESSION['tipo_usuario'] ?? 'admin';
             <a href="cadastrar_bebida.php" class="action-btn">
                 <span class="action-icon">🥤</span>
                 <span>Cadastrar Bebidas</span>
+            </a>
+
+            <a href="admin_pedidos.php" class="action-btn">
+                <span class="action-icon">📦</span>
+                <span>Ver Todos os Pedidos</span>
             </a>
 
             <a href="relatorios.php" class="action-btn">

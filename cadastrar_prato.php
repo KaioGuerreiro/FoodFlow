@@ -6,12 +6,31 @@ if (!isset($_SESSION['logged_in']) || $_SESSION['tipo_usuario'] !== 'admin') {
     exit();
 }
 
-// Pratos iguais ao cardápio
-$pratos = [
-    ['nome' => 'Spaghetti à Bolonhesa', 'descricao' => 'Delicioso macarrão com molho de carne e tomate 🍅', 'preco' => 29.90],
-    ['nome' => 'Filé de Frango Grelhado', 'descricao' => 'Acompanhado de arroz, feijão e salada fresca 🥗', 'preco' => 25.50],
-    ['nome' => 'Risoto de Camarão', 'descricao' => 'Risoto cremoso com camarões suculentos 🍤', 'preco' => 38.00],
-];
+require_once __DIR__ . '/produtos.php';
+
+$erro = '';
+$sucesso = false;
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nome = trim($_POST['nome'] ?? '');
+    $descricao = trim($_POST['descricao'] ?? '');
+    $preco = $_POST['preco'] ?? 0;
+
+    if ($nome === '' || $preco === '') {
+        $erro = 'Preencha o nome e o preço do prato.';
+    } else {
+        $res = createProduct($nome, $descricao, (float)$preco, 'prato');
+        if ($res['success']) {
+            $sucesso = true;
+        } else {
+            $erro = 'Erro ao cadastrar prato: ' . ($res['message'] ?? 'Unknown');
+        }
+    }
+}
+
+$listRes = listProducts('prato');
+$pratos = [];
+if ($listRes['success']) $pratos = $listRes['data'];
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -33,6 +52,24 @@ $pratos = [
         .prato-info h4 {
             margin-bottom: 5px;
         }
+        .error-message {
+            background: #ffecec;
+            color: #b00020;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            text-align: center;
+            font-weight: 600;
+        }
+        .success-message {
+            background: #e6ffed;
+            color: #0c8a1f;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            text-align: center;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
@@ -40,10 +77,18 @@ $pratos = [
     <div class="login-card">
         <div class="login-header">
             <h1 class="brand">Cadastrar Prato</h1>
-            <p class="subtitle">Adicione novos pratos ao cardápio 🍝 (Simulação)</p>
+            <p class="subtitle">Adicione novos pratos ao cardápio 🍝</p>
         </div>
 
-        <form method="POST" class="login-form" onsubmit="alert('Simulação: cadastro não funcional'); return false;">
+        <?php if ($erro): ?>
+            <div class="error-message"><?= htmlspecialchars($erro) ?></div>
+        <?php elseif ($sucesso): ?>
+            <div class="success-message" style="background: #e6ffed; color: #0c8a1f; padding: 10px; border-radius: 8px; margin-bottom: 12px; text-align: center; font-weight: 600;">
+                ✅ Prato cadastrado com sucesso!
+            </div>
+        <?php endif; ?>
+
+        <form method="POST" class="login-form">
             <div class="form-group">
                 <label>Nome do prato *</label>
                 <input type="text" name="nome" placeholder="Ex: Lasanha à bolonhesa" required>
@@ -67,7 +112,7 @@ $pratos = [
         </form>
 
         <div class="pratos-lista">
-            <h3 style="text-align:center; margin-bottom:10px;">🍽️ Pratos Cadastrados (Exemplo)</h3>
+            <h3 style="text-align:center; margin-bottom:10px;">🍽️ Pratos Cadastrados</h3>
             <?php foreach ($pratos as $p): ?>
                 <div class="prato-card">
                     <div class="prato-info">
