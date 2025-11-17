@@ -14,6 +14,7 @@ $pedidos = listAllOrders();
 
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <title>Pedidos - Painel Admin | FoodFlow</title>
@@ -30,7 +31,7 @@ $pedidos = listAllOrders();
             background: white;
             border-radius: 12px;
             padding: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
             animation: slideIn 0.4s ease-out;
         }
 
@@ -69,7 +70,7 @@ $pedidos = listAllOrders();
             background: #fff;
             padding: 40px;
             border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             text-align: center;
         }
 
@@ -86,6 +87,7 @@ $pedidos = listAllOrders();
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             font-size: 28px;
+            margin-bottom: 20px;
         }
 
         .empty {
@@ -96,56 +98,58 @@ $pedidos = listAllOrders();
         }
     </style>
 </head>
+
 <body>
-<div class="menu-container">
-    <h1>📦 Pedidos dos Clientes</h1>
+    <div class="menu-container">
+        <h1>Pedidos dos Clientes</h1>
 
-    <div class="menu-actions">
-        <a href="dashboard.php" class="login-button">⬅️ Voltar ao Dashboard</a>
-        <a href="cardapio.php" class="login-button">📋 Ver Cardápio</a>
-    </div>
+        <div class="menu-actions">
+            <a href="dashboard.php" class="login-button">Voltar ao Dashboard</a>
+            <a href="cardapio.php" class="login-button">📋 Ver Cardápio</a>
+        </div>
 
-    <?php if (empty($pedidos)): ?>
-        <p class="empty">Nenhum pedido foi realizado ainda 😴</p>
-    <?php else: ?>
-        <div class="orders-list">
-            <?php foreach ($pedidos as $pedido): ?>
-                <div class="order-card">
-                    <div class="order-header">
-                        <h3>Pedido #<?= htmlspecialchars($pedido['id']) ?></h3>
-                    </div>
+        <?php if (empty($pedidos)): ?>
+            <p class="empty">Nenhum pedido foi realizado ainda 😴</p>
+        <?php else: ?>
+            <div class="orders-list">
+                <?php foreach ($pedidos as $pedido): ?>
+                    <div class="order-card">
+                        <div class="order-header">
+                            <h3>Pedido #<?= htmlspecialchars($pedido['id']) ?></h3>
+                        </div>
 
-                    <div class="order-info">
-                        <p><strong>Cliente:</strong> <?= htmlspecialchars($pedido['nome']) ?></p>
-                        <p><strong>Data:</strong> <?= htmlspecialchars($pedido['criado_em']) ?></p>
-                        <p><strong>Status:</strong> <?= htmlspecialchars($pedido['status']) ?></p>
-                        <p><strong>Valor Total:</strong> R$ <?= number_format($pedido['total'], 2, ',', '.') ?></p>
-                    </div>
+                        <div class="order-info">
+                            <p><strong>Cliente:</strong> <?= htmlspecialchars($pedido['nome']) ?></p>
+                            <p><strong>Data:</strong> <?= htmlspecialchars($pedido['criado_em']) ?></p>
+                            <p><strong>Status:</strong> <?= htmlspecialchars($pedido['status']) ?></p>
+                            <p><strong>Valor Total:</strong> R$ <?= number_format($pedido['total'], 2, ',', '.') ?></p>
+                        </div>
 
-                    <div class="order-items">
-                        <h4>Itens:</h4>
-                        <ul>
-                            <?php 
+                        <div class="order-items">
+                            <h4>Itens:</h4>
+                            <ul>
+                                <?php
                                 $details = getOrderDetails($pedido['id']);
-                                if ($details && !empty($details['items'])): 
-                                    foreach ($details['items'] as $item): 
-                            ?>
-                                <li>
-                                    <?= htmlspecialchars($item['quantidade']) ?>x <?= htmlspecialchars($item['nome']) ?>
-                                    — R$ <?= number_format($item['preco_unitario'] * $item['quantidade'], 2, ',', '.') ?>
-                                </li>
-                            <?php 
+                                if ($details && !empty($details['items'])):
+                                    foreach ($details['items'] as $item):
+                                        ?>
+                                        <li>
+                                            <?= htmlspecialchars($item['quantidade']) ?>x <?= htmlspecialchars($item['nome']) ?>
+                                            — R$ <?= number_format($item['preco_unitario'] * $item['quantidade'], 2, ',', '.') ?>
+                                        </li>
+                                        <?php
                                     endforeach;
                                 else:
-                            ?>
-                                <li>Sem itens registrados.</li>
-                            <?php endif; ?>
-                        </ul>
+                                    ?>
+                                    <li>Sem itens registrados.</li>
+                                <?php endif; ?>
+                            </ul>
+                        </div>
                     </div>
-                </div>
-            <?php endforeach; ?>
-        </div>
-    <?php endif; ?>
-</div>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+    </div>
 </body>
+
 </html>

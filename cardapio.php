@@ -26,13 +26,13 @@ if ($res['success']) {
 
 // 🧩 Adicionar ao carrinho (usa produto_id)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['produto_id'])) {
-    $produto_id = (int)$_POST['produto_id'];
+    $produto_id = (int) $_POST['produto_id'];
     foreach ($itens as $item) {
-        if ((int)$item['id'] === $produto_id) {
+        if ((int) $item['id'] === $produto_id) {
             $existe = false;
 
             foreach ($_SESSION['carrinho'] as &$carrItem) {
-                if ((int)$carrItem['id'] === $produto_id) {
+                if ((int) $carrItem['id'] === $produto_id) {
                     $carrItem['quantidade']++;
                     $existe = true;
                     break;
@@ -57,6 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['produto_id'])) {
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <title>Cardápio - FoodFlow</title>
@@ -101,13 +102,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['produto_id'])) {
             color: white;
             padding: 20px;
             border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
         .menu-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
         }
 
         form button {
@@ -116,8 +117,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['produto_id'])) {
             font-size: 14px;
             font-weight: 600;
             color: white;
-            background: rgba(255,255,255,0.2);
-            border: 2px solid rgba(255,255,255,0.4);
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.4);
             border-radius: 8px;
             cursor: pointer;
             transition: 0.3s;
@@ -151,9 +152,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['produto_id'])) {
         }
     </style>
 </head>
+
 <body>
     <div class="menu-container">
-        <h1>🍽️ Cardápio - Bem-vindo(a), <?= htmlspecialchars($userName) ?>!</h1>
+        <h1>Cardápio - Bem-vindo(a), <?= htmlspecialchars($userName) ?>!</h1>
 
         <?php if (!empty($mensagem)): ?>
             <div class="message"><?= htmlspecialchars($mensagem) ?></div>
@@ -169,14 +171,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['produto_id'])) {
 
         <h2>🍝 Pratos</h2>
         <div class="menu-grid">
-                        <?php foreach ($itens as $item): ?>
+            <?php foreach ($itens as $item): ?>
                 <?php if (($item['categoria'] ?? 'prato') === 'prato'): ?>
                     <div class="menu-card">
                         <h3><?= htmlspecialchars($item['nome']) ?></h3>
                         <p><?= htmlspecialchars($item['descricao']) ?></p>
                         <p class="price">R$ <?= number_format($item['preco'], 2, ',', '.') ?></p>
                         <form method="POST">
-                            <input type="hidden" name="produto_id" value="<?= (int)$item['id'] ?>">
+                            <input type="hidden" name="produto_id" value="<?= (int) $item['id'] ?>">
                             <button type="submit">Adicionar ao Carrinho</button>
                         </form>
                     </div>
@@ -193,7 +195,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['produto_id'])) {
                         <p><?= htmlspecialchars($item['descricao']) ?></p>
                         <p class="price">R$ <?= number_format($item['preco'], 2, ',', '.') ?></p>
                         <form method="POST">
-                            <input type="hidden" name="produto_id" value="<?= (int)$item['id'] ?>">
+                            <input type="hidden" name="produto_id" value="<?= (int) $item['id'] ?>">
                             <button type="submit">Adicionar ao Carrinho</button>
                         </form>
                     </div>
@@ -204,4 +206,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['produto_id'])) {
         <a href="logout.php" class="logout">🚪 Sair</a>
     </div>
 </body>
+
 </html>
