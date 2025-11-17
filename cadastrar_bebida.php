@@ -125,8 +125,9 @@ if ($listRes['success'])
                 <?php foreach ($bebidas as $b): ?>
                     <div class="bebida-card">
                         <div class="bebida-info">
-                            <h4><?= htmlspecialchars($b['nome']); ?></h4>
-                            <p><?= htmlspecialchars($b['tamanho']); ?> • R$ <?= number_format($b['preco'], 2, ',', '.'); ?>
+                            <h4><?= htmlspecialchars($b['nome'] ?? 'Sem nome'); ?></h4>
+                            <p><?= htmlspecialchars($b['descricao'] ?? $b['tamanho'] ?? ''); ?> • R$
+                                <?= number_format($b['preco'] ?? 0, 2, ',', '.'); ?>
                             </p>
                         </div>
                     </div>
