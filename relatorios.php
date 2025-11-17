@@ -118,7 +118,6 @@ $metodo_dinheiro = 17;
     <meta charset="UTF-8">
     <title>Relatórios - FoodFlow</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="styles.css">
     <style>
         body {
             background: #f5f7fa;
@@ -133,6 +132,8 @@ $metodo_dinheiro = 17;
             justify-content: space-between;
             align-items: center;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            margin: 1rem;
         }
 
         .navbar .brand {
@@ -337,7 +338,7 @@ $metodo_dinheiro = 17;
         </div>
 
         <div style="text-align: center;">
-            <a href="dashboard.php" class="back-btn">⬅️ Voltar ao Dashboard</a>
+            <a href="dashboard.php" class="back-btn">Voltar ao Dashboard</a>
         </div>
     </div>
 </body>

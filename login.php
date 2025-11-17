@@ -51,7 +51,7 @@ unset($_SESSION['error']);
     <div class="login-container">
         <div class="login-card">
             <div class="login-header">
-                <h1 class="brand">🍔 FoodFlow</h1>
+                <h1 class="brand">FoodFlow</h1>
                 <p class="subtitle">Gerencie seu restaurante com facilidade</p>
             </div>
 
