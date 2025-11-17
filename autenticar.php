@@ -1,5 +1,46 @@
 <?php
 session_start();
+require_once __DIR__ . '/database.php';
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header('Location: login.php');
+    exit();
+}
+
+$email = trim($_POST['username'] ?? '');
+$password = $_POST['password'] ?? '';
+
+if ($email === '' || $password === '') {
+    $_SESSION['error'] = 'Preencha todos os campos.';
+    header('Location: login.php');
+    exit();
+}
+
+$db = Database::getInstance()->getConnection();
+$stmt = $db->prepare('SELECT * FROM users WHERE email = ? LIMIT 1');
+$stmt->execute([$email]);
+$user = $stmt->fetch();
+
+if ($user && password_verify($password, $user['senha'])) {
+    $_SESSION['logged_in'] = true;
+    $_SESSION['user_id'] = $user['id'];
+    $_SESSION['user_name'] = $user['nome'] ?? $user['email'];
+    $_SESSION['tipo_usuario'] = $user['tipo_usuario'] ?? 'comum';
+    if ($_SESSION['tipo_usuario'] === 'admin') {
+        header('Location: dashboard.php');
+    } else {
+        header('Location: cardapio.php');
+    }
+    exit();
+} else {
+    $_SESSION['error'] = 'E-mail ou senha incorretos.';
+    header('Location: login.php');
+    exit();
+}
+
+?>
+<?php
+session_start();
 
 // Verifica se o formulário foi enviado
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {

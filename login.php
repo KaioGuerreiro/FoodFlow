@@ -61,8 +61,8 @@ unset($_SESSION['error']);
 
             <form action="autenticar.php" method="POST" class="login-form" autocomplete="off">
                 <div class="form-group">
-                    <label for="username">Usuário</label>
-                    <input type="text" id="username" name="username" placeholder="Digite seu usuário" required autofocus>
+                    <label for="username">E-mail</label>
+                    <input type="email" id="username" name="username" placeholder="Digite seu e-mail" required autofocus>
                 </div>
 
                 <div class="form-group">
@@ -82,15 +82,6 @@ unset($_SESSION['error']);
 
             <div class="login-footer">
                 <p>Não tem uma conta? <a href="cadastro.php">Cadastre-se</a></p>
-            </div>
-
-            <div class="login-footer" style="margin-top:15px; font-size:14px; color:#555;">
-                <p><strong>Usuários de teste:</strong></p>
-                <p>
-                    <strong>admin / admin123</strong> (Administrador)<br>
-                    <strong>Matheus / 12345</strong><br>
-                    <strong>Kaio / 12345</strong>
-                </p>
             </div>
         </div>
     </div>
